@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { PropTypes } from 'prop-types'
 import { logout } from '../../actions/auth'
-
+import Analyzer from './Anaylzer'
+const emailAddress = "msaaddastgir@gmail.com"
 function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthenticated ,loading}, logout }) {
 
   const authLinks = (
@@ -29,11 +30,19 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
 
   const guestLinks = (
     <ul>
-      <li><Link to="/profiles">Explore</Link></li>
-      <li><Link to="/parser">Parser</Link></li>
-      <li><Link to="/register">Register</Link></li>
-      <li><Link to="/login">Login</Link></li>
-    </ul>
+    <li><Link to="/">Home</Link></li>
+    <li><Link to="/profiles">Explore</Link></li>
+    <li><Link to="/admin-dashboard">Admin</Link></li>
+    <li><Link to="/parser">Parser</Link></li>
+    <li><Link to="/register">Register</Link></li>
+    <li><Link to="/login">Login</Link></li>
+    <li>
+      <Link to="" className='text-customBlue ml-1' onClick={() => window.location.href = `mailto:${emailAddress}`}>
+        Contact Us 
+      </Link>
+    </li>
+  </ul>
+  
   )
 
   const adminLinks = (
