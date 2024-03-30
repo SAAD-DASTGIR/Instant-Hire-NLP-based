@@ -27,7 +27,7 @@ const AdminLogin = ({ isAdminAuthenticated, adminLogin }) => {
     }
 
   return (
-    <div className='auth bg-black'>
+    <div className="auth bg-cover bg-center h-screen" style={{backgroundImage: 'url(https://plus.unsplash.com/premium_photo-1677194562330-2210f33e2576?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGxvZ2lufGVufDB8fDB8fHww)'}}>
         <div className="auth-container p-3">
             <h1 className="text-6xl font-semibold mt-10 mb-6 text-center text-primary">Admin Login</h1>
             <form className="form" onSubmit={e => handleSubmit(e)} >
