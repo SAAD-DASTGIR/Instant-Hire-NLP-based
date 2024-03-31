@@ -6,6 +6,8 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getJobById, applyForJob, getAppliedJobs, deleteJob, addToFavorites, removeFromFavorites, deleteApplication, markJobSpam } from '../../actions/job';
 import JobTop from './JobTop';
 import JobBottom from './JobBottom';
+import { useDispatch } from 'react-redux';
+import { setReducer } from '../../actions/score';
 
 const Job = ({
     getJobById, 
@@ -22,9 +24,11 @@ const Job = ({
     const [applied, setApplied] = useState(false);
     const [favorite, setFavorite] = useState(false);
     const [resume, setResume] = useState(null); // State to store resume file
-
+    
     const { id } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [applicantScore, setApplicantScore] = useState(null); // State to store applicant's score
 
     useEffect(() => {
         const fetchJobs = async () => {
@@ -48,9 +52,46 @@ const Job = ({
             alert("Please upload your resume.");
             return;
         }
+        
+        // Call applyForJob action to upload the resume and apply for the job
         await applyForJob(id, resume);
-        setApplied(true);
+
+        // Fetch the score for the applicant after applying
+        fetchScoreForApplicant(resume);
     }
+
+    // Function to fetch score for the applicant
+    const fetchScoreForApplicant = async (resume) => {
+        try {
+            // Prepare the request payload
+            const formData = new FormData();
+            formData.append('resume', resume);
+            formData.append('jobDescription', job.description); // Append job description to the FormData
+        
+            // Make the POST request to the scores API
+            const response = await fetch("/scores", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            // Parse the response
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                const score = await response.json();
+                dispatch(setReducer(score)); 
+                console.log(score);
+            } else {
+                throw new Error("Response is not in JSON format");
+            }
+        } catch (error) {
+            console.error("Error fetching score for applicant:", error);
+            // Handle error
+        }
+    };
 
     return (
         <div className='container'>
@@ -71,20 +112,10 @@ const Job = ({
                         <JobBottom job={job} />
                         {!auth.isAdminAuthenticated && (
                             <div className=" bg-white px-24 pb-16">
-                                {favorite ? (
-                                    <button disabled={!auth.isAuthenticated} onClick={() => {removeFromFavorites(id); setFavorite(!favorite)}} className={auth.isAuthenticated ? "px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4" : "btn btn-disable"}> Remove from Favourites</button>
-                                ) : (
-                                    <button disabled={!auth.isAuthenticated} onClick={() => {addToFavorites(id); setFavorite(!favorite)}} className={auth.isAuthenticated ? "px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4" : "btn btn-disable"}> Add to Favourites</button>
-                                )}
-
-                                {applied ? (
-                                    <button disabled={!auth.isAuthenticated} onClick={()=> {deleteApplication(id); setApplied(!applied)}} className={auth.isAuthenticated ? "px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4" : "btn btn-disable"}>Revoke Application</button>
-                                ) : (
-                                    <Fragment>
-                                        <input type="file" onChange={handleFileUpload} />
-                                        <button disabled={!auth.isAuthenticated} onClick={handleApply} className={auth.isAuthenticated ? "px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4" : "btn btn-disable"} >Apply</button>
-                                    </Fragment>
-                                )}
+                                {/* Other buttons */}
+                                {applicantScore !== null && <p>Applicant's Score: {applicantScore}</p>}
+                                <input type="file" onChange={handleFileUpload} />
+                                <button disabled={!auth.isAuthenticated} onClick={handleApply} className={auth.isAuthenticated ? "px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4" : "btn btn-disable"} >Apply</button>
                             </div>
                         )}
                     </div>

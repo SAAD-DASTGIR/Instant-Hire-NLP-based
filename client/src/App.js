@@ -1,7 +1,7 @@
 import './App.css';
 import { Fragment, useEffect } from 'react';
 import {BrowserRouter as Router, Routes, Route,   } from 'react-router-dom';
-
+import Email from '../src/components/layout/Email'
 import setAuthToken from './utils/setAuthToken';
 //components
 import PrivateRoutes from './components/routing/PrivateRoutes';
@@ -36,6 +36,7 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import Video from './components/videoSDK/Video';
 import Parser from './components/parser/Parser'
 import Resumes from './components/parser/Resumes';
+import Land from './components/layout/AboutPage'
 
 // Redux
 import { Provider } from 'react-redux'
@@ -67,6 +68,7 @@ function App() {
             <Alert />
             <Routes>
               <Route exact path="/" element={<Landing />} />
+              <Route exact path="/email" element={<Email />} />
               <Route exact path="/video" element={<Video />} />
               <Route exact path="/admin" element={<AdminLogin />} />
               <Route exact path="/login" element={<Login />} />

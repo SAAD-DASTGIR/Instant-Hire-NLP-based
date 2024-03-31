@@ -1,4 +1,4 @@
-// require("dotenv").config();
+require("dotenv").config();
 const express = require('express')
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -34,7 +34,7 @@ app.post("/scores", async (req, res) => {
     resume.mv(resumeFilePath, (err) => {
         if (err) {
             console.error("Error moving file:", err);
-            return res.status(500).send({ success: false, message: "Error moving file" });
+            return res.status(500).send({ success: false, message: "Error moving file: " + err.message });
         }
     });
 
@@ -52,10 +52,10 @@ app.post("/scores", async (req, res) => {
 
     pythonProcess.on("close", async (code) => {
         if (code === 0) {
+            console.log("Score:", score);
             res.send(score);
             console.log("Received file:", req.files.resume.name);
             console.log("Job description:", req.body.jobDescription);
-            console.log("Score:", score);
         } else {
             console.error("Error getting score");
             res.status(500).send({ success: false, message: "Error getting score" });

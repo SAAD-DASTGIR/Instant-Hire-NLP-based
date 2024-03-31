@@ -1,26 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useIntersection } from 'react-use';
 
 const Landingexplore = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
-  const intersection = useIntersection(sectionRef, {
-    root: null,
-    rootMargin: '0px',
-    threshold: 1, 
-  });
 
   useEffect(() => {
-    if (intersection && intersection.intersectionRatio > 0.5) {
-      setIsVisible(true);
-    }
-  }, [intersection]);
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
-    <div ref={sectionRef} className={`bg-gray-100 min-h-full py-12 px-4 md:px-8 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`bg-gray-100 min-h-full py-12 px-4 md:px-8 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{ transition: 'opacity 5s ease-in-out' }}>
       <div className="min-w-6xl mx-auto bg-white bg-opacity-90 shadow-lg rounded-lg p-8 md:p-12 flex flex-col md:flex-row items-center" style={{ backgroundImage: 'url("https://imgs.search.brave.com/yY7xauJkphcryTWepj4zdkRXXG9c0CXusuNrdA_M77k/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTU3/MjcwODA5OS9waG90/by93aGl0ZS1iYWNr/Z3JvdW5kLXdpdGgt/Y2lyY2xlLXNoYXBl/cy53ZWJwP2I9MSZz/PTE3MDY2N2Emdz0w/Jms9MjAmYz1HTy15/Z19adXYyYzdTaWFt/WWF6dTREd19FWGVs/V0QxanpUOWdtTm51/RmxvPQ")', backgroundSize: 'cover', backgroundPosition: 'center' }} >
-       
         <div className="md:w-1/2 md:pl-8">
           <h1 className="text-3xl md:text-4xl font-bold text-customBlue mb-6">Explore Users</h1>
           <p className="text-gray-800 text-lg leading-relaxed mb-6">

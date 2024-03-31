@@ -63,6 +63,9 @@ const JobSchema = Schema({
             type: Date,
             default: Date.now
         },
+        score:{
+            type : String,
+        },
         approvedStatus:{
             type: String,
             enum : ['Pending','Approved','Rejected'],
@@ -89,6 +92,7 @@ const JobSchema = Schema({
         field:{
             type: String
         },
+       
         date:{
             type: Date,
             default: Date.now

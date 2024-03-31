@@ -5,6 +5,7 @@ import profile from './profile'
 import post from './post'
 import job from './job'
 import interview from "./interview";
+import scoreReducer from "./score";
 
 export default combineReducers({
     alert,
@@ -12,5 +13,6 @@ export default combineReducers({
     profile,
     post,
     job,
-    interview
+    interview,
+    score:scoreReducer,
 })

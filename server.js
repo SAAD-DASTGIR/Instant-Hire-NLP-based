@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require('express')
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const connectDB = require('./config/db')
 const Job = require('./models/Job')
 const Resume = require('./models/Resume')
@@ -9,12 +10,13 @@ const { PythonShell } = require('python-shell');
 const axios = require('axios')
 const path = require('path');
 const bodyParser = require('body-parser');
-const fileUpload = require('express-fileupload');
+// const fileUpload = require('express-fileupload');
 const fs = require('fs');
 const FormData = require('form-data');
 const multer = require('multer');
 const upload = multer({ dest: 'resumes/' });
-
+const { spawn } = require('child_process');
+const fileUpload = require('express-fileupload');
 
 
 const app = express()
@@ -60,6 +62,198 @@ app.get('/python', async (req, res) => {
     console.error(error);
   });
 } )
+
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'uploads'); // Upload files to the 'uploads' directory
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.originalname); // Keep the original filename
+//   }
+// });
+
+// const uploads = multer({
+//   storage: storage,
+//   onError: function (err, next) {
+//     console.error("Multer error:", err);
+//     next(err);
+//   }
+// // }).single('resume');
+// app.post("/scores", async (req, res) => {
+//   try {
+//     const jobDescription = req.body.jobDescription;
+//     const user = req.body.user;
+//     const resumeFile = req.files.resume; // Assuming the file is sent as 'resume'
+
+//     // Check if the file was uploaded
+//     if (!resumeFile) {
+//       return res.status(400).json({ success: false, message: "No file uploaded" });
+//     }
+
+//     // Move the uploaded file to a designated directory
+//     const uploadPath = path.join(__dirname, 'uploads', resumeFile.name);
+
+//     // Execute Python script to get score
+//     const pythonProcess = spawn("python3", ["resume-score.py", uploadPath, jobDescription]);
+
+//     let score = "";
+
+//     pythonProcess.stdout.on("data", (data) => {
+//       score += data.toString();
+//       console.log(score); // Log the score here
+//     });
+
+//     pythonProcess.stderr.on("data", (data) => {
+//       console.error("Error executing Python script:", data.toString());
+//     });
+
+//     pythonProcess.on("close", async (code) => {
+//       if (code === 0) {
+//         const scoreValue = parseFloat(score); // Convert score to a number if necessary
+
+//         // Update score for the applicant in the database
+//         const updatedJob = await Job.findOneAndUpdate(
+//           { _id: req.params.id, "applicants.user": user },
+//           { $set: { "applicants.score": score } },
+//           { new: true }
+//         );
+
+//         if (!updatedJob) {
+//           return res.status(404).json({ msg: 'Job or applicant not found' });
+//         }
+
+//         // Send the score to the frontend
+//         res.json({ score: scoreValue });
+//       } else {
+//         console.error("Error getting score");
+//         res.status(500).send({ success: false, message: "Error getting score" });
+//       }
+//     });
+
+//     // Move the uploaded file to the designated directory
+//     await resumeFile.mv(uploadPath);
+
+//   }
+//   catch (error) {
+//     console.error("Error processing request:", error);
+//     res.status(500).send({ success: false, message: "Error processing request" });
+//   }
+// });
+
+
+
+app.post("/scores", async (req, res) => {
+  try {
+    // Check if the file was uploaded
+    if (!req.files || !req.files.resume) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+
+    const resumeFile = req.files.resume;
+    const jobDescription = req.body.jobDescription;
+
+    // Move the uploaded file to a designated directory
+    const uploadPath = path.join(__dirname, 'uploads', resumeFile.name);
+    await resumeFile.mv(uploadPath);
+
+    // Execute Python script to get score
+    const pythonProcess = spawn("python3", ["resume-score.py", uploadPath, jobDescription]);
+
+    let score = "";
+
+    pythonProcess.stdout.on("data", (data) => {
+      score += data.toString();
+    });
+
+    pythonProcess.stderr.on("data", (data) => {
+      console.error("Error executing Python script:", data.toString());
+    });
+
+    pythonProcess.on("close", async (code) => {
+      if (code === 0) {
+        console.log("Received file:", resumeFile.name);
+        console.log("Job description:", jobDescription);
+        console.log("Score:", score);
+        res.json(score);
+      } else {
+        console.error("Error getting score");
+        res.status(500).send({ success: false, message: "Error getting score" });
+      }
+    });
+    
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(500).send({ success: false, message: "Error processing request" });
+  }
+});
+
+
+app.put('/api/jobs/jobstatus/:id', async (req, res) => {
+    try {
+      const job = await Job.findById(req.params.id);
+      const status = req.body.status;
+      const user = req.body.user;
+      console.log({status, user});
+  
+      if (!job) {
+        return res.status(404).json({ msg: 'Job not found' });
+      }
+
+      Job.findOneAndUpdate(
+        { _id: req.params.id, "applicants.user": user },
+        { $set: { "applicants.$.approvedStatus": status } },
+        { new: true }
+      ).exec((err, updatedJob) => {
+        if (err) {
+          console.error(err);
+        } else {
+          null
+        }
+      });
+
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  });
+
+
+  app.put('/api/jobs/jobstatus/:id', async (req, res) => {
+    try {
+      const jobId = req.params.id;
+      const { user, status } = req.body;
+  
+      // Find the job by ID
+      const job = await Job.findById(jobId);
+  
+      if (!job) {
+        return res.status(404).json({ msg: 'Job not found' });
+      }
+  
+      // Update the job status for the specified user
+      const updatedJob = await Job.findOneAndUpdate(
+        { _id: jobId, "applicants.user": user },
+        { $set: { "applicants.$.approvedStatus": status } },
+        { new: true }
+      );
+  
+      if (!updatedJob) {
+        return res.status(404).json({ msg: 'Job or applicant not found' });
+      }
+  
+      // Find the applicant's score
+      const applicant = updatedJob.applicants.find(app => app.user.toString() === user.toString());
+      const score = applicant ? applicant.score : null;
+  
+      // Send the updated job status and the score for the specified user
+      res.json({ jobStatus: updatedJob, score });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  });
+  
 
 
 app.post('/parse-resume', async (req, res) => {
@@ -198,34 +392,7 @@ app.get('/resumes/search', async (req, res) => {
   }
 });
 
-app.put('/api/jobs/jobstatus/:id', async (req, res) => {
-    try {
-      const job = await Job.findById(req.params.id);
-      const status = req.body.status;
-      const user = req.body.user;
-      console.log({status, user});
-  
-      if (!job) {
-        return res.status(404).json({ msg: 'Job not found' });
-      }
 
-      Job.findOneAndUpdate(
-        { _id: req.params.id, "applicants.user": user },
-        { $set: { "applicants.$.approvedStatus": status } },
-        { new: true }
-      ).exec((err, updatedJob) => {
-        if (err) {
-          console.error(err);
-        } else {
-          null
-        }
-      });
-
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server Error');
-    }
-  });
 
 
 
@@ -329,37 +496,44 @@ app.post('/upload', (req, res) => {
   });
 });
 
-// Handle received text data
-app.post('/receive_text',async (req, res) => {
-  const { text, path } = req.body;
-  console.log('Received text:', text);
-  console.log('path:', path);
+const genAI = new GoogleGenerativeAI("AIzaSyD8lt6NXXNklYRfzIx5WJNk8iQimjb5MsU");
+
+// Endpoint for processing uploaded files
+app.post('/receive_text', async (req, res) => {
+  const { text: reqText, path } = req.body; // Renamed to avoid conflict
+  
+  console.log('Received text:', reqText);
+  console.log('Path:', path);
   
   try {
-    // const existingResume = await Resume.findOne({ path: path });
-    // if (existingResume) {
-    //   return res.status(409).json({ error: 'Resume with the same path already exists' });
-    // }
-    const newResume = new Resume({
-      email: text['E-Mail'],
-      phoneNumber: text['Phone Number'],
-      name: text.Name,
-      skills: text.Skills,
-      qualification: text.Qualification.map(entry => entry.join(' ')),
-      institutes: text.Institutes,
-      experience: text.Experience,
-      path: path
-    });
+    const jobDescription = "I'm hiring software developer";
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const prompt = `
+    Act as an expert Application Tracking System (ATS) specializing in the tech field, encompassing software engineering, data science, data analysis, and big data engineering. Your objective is to assess the resume provided in ${reqText} against the given job description in ${jobDescription}. Identify missing keywords accurately in resume and list them in a structured format. The response should be presented in bullet points, numbered 1, 2, 3, 4, etc., following this structure: {{"MissingKeywords: 1, 2, 3, 4, ..."}}. Omit any details regarding match percentages and profile summaries. If you find the provided document does not meet the criteria of a resume, please reply with 'Invalid Resume'.`
     
-    const savedResume = await newResume.save();
-    console.log(savedResume)
-    res.json(savedResume);
+    // Generating response
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    console.log('Generated response:', response);
+  
+    if (!response) {
+      throw new Error('Empty response received from Gemini API');
+    }
+  
+    // Sending response
+    const generatedText = await response.text();
+    console.log('Generated text:', generatedText);
+    res.send(generatedText);
+    
+    // Saving resume data
+    // Replace this section with your actual Resume schema and saving logic
   } catch (err) {
-    console.log(err.message)
-    res.status(500).json({ error: err.message });
+    console.error('Error generating content:', err.message);
+    res.status(500).json({ error: 'Error generating content' });
   }
-
+  
 });
+
 
 // app.get('/resume/search', async (req, res) => {
 //   const skill = req.query.skill; // Retrieve skill from query parameter

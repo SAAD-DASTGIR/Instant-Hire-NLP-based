@@ -187,13 +187,19 @@ export const logout =() => dispatch => {
 
 
 // Load Company
-export const loadAdmin = () => async dispatch => {
-    if (localStorage.token){
-        setAuthToken(localStorage.token)
+export const loadAdmin = ({email, password}) => async dispatch => {
+    // if (localStorage.token){
+    //     setAuthToken(localStorage.token)
+    // }
+    const config ={
+        headers: {
+            'Content-Type': 'application/json'
+        }
     }
+    const body = JSON.stringify({ email, password})
 
     try {
-        const res = await axios.get('/api/admin')
+        const res = await axios.get('/api/admin',body,config)
         dispatch({
             type: ADMIN_LOADED,
             payload: res.data

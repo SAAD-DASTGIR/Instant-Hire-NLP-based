@@ -42,6 +42,9 @@ export const ADD_DATA = 'ADD_DATA'
 export const ADD_SCHEDULED_INTERVIEW = 'ADD_SCHEDULED_INTERVIEW'
 export const GET_INTERVIEWS = 'GET_INTERVIEWS'
 export const SET_MEETING_NULL = 'SET_MEETING_NULL'
+export const SET_APPLICANT_SCORE= 'SET_APPLICANT_SCORE'
 
 
+// actions/types.js
 
+// export const SET_SCORE = 'SET_SCORE';
