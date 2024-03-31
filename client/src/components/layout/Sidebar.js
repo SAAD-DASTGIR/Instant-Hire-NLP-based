@@ -35,7 +35,7 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
         </Link>
       </li>
       <li className=' py-3'>
-        <Link className=' hover:bg-blue-400 text-customBlue hover:text-black px-2' to="/posts">
+        <Link className=' text-customBlue hover:text-black px-2' to="/posts">
             <i className="fa fa-clipboard" aria-hidden="true"></i>
             <span className='text-xl  ml-4'>Commuinty</span> 
         </Link>
