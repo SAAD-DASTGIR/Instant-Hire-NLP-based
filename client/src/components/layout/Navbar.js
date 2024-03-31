@@ -10,20 +10,20 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
   const authLinks = (
     <ul>
       <li>
-        <a href='#!' onClick={ logout }>
+        <Link to={"/"} onClick={ logout }>
           <i className='fas fa-sign-out-alt' />{' '} 
           <span className='hide-sm' >Logout</span>
-        </a>
+        </Link>
       </li>
     </ul>
   )
   const companyAuthLinks = (
     <ul>
       <li>
-        <a href='#!' onClick={ logout }>
+      <Link to={"/"} onClick={ logout }>
           <i className='fas fa-sign-out-alt' />{' '} 
           <span className='hide-sm' >Logout</span>
-        </a>
+        </Link>
       </li>
     </ul>
   )
