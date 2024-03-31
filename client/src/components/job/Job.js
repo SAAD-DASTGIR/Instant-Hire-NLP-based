@@ -24,17 +24,15 @@ const Job = ({
     const [applied, setApplied] = useState(false);
     const [favorite, setFavorite] = useState(false);
     const [resume, setResume] = useState(null); // State to store resume file
-    
+    const [applicantScore, setApplicantScore] = useState(null); // State to store applicant's score
     const { id } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [applicantScore, setApplicantScore] = useState(null); // State to store applicant's score
 
     useEffect(() => {
         const fetchJobs = async () => {
             await getAppliedJobs();
             await getJobById(id);
-
             setApplied(applied_jobs.some(jobx => jobx._id === id));
             setFavorite(favorite_jobs.some(jobx => jobx._id === id));
         }
@@ -93,6 +91,13 @@ const Job = ({
         }
     };
 
+    // Handler for revoking application
+    const handleRevokeApplication = async () => {
+        await deleteApplication(id);
+        setApplied(false);
+        setResume(null); // Reset the resume state
+    };
+
     return (
         <div className='container'>
             {job === null || loading ? (
@@ -114,8 +119,18 @@ const Job = ({
                             <div className=" bg-white px-24 pb-16">
                                 {/* Other buttons */}
                                 {applicantScore !== null && <p>Applicant's Score: {applicantScore}</p>}
-                                <input type="file" onChange={handleFileUpload} />
-                                <button disabled={!auth.isAuthenticated} onClick={handleApply} className={auth.isAuthenticated ? "px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4" : "btn btn-disable"} >Apply</button>
+                                {applied ? (
+                                    <Fragment>
+                                        <button onClick={handleRevokeApplication} className="px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4">Revoke Application</button>
+                                        <input type="file" onChange={handleFileUpload} />
+                                        <button disabled={!auth.isAuthenticated} onClick={handleApply} className={auth.isAuthenticated ? "px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4" : "btn btn-disable"} >Apply</button>
+                                    </Fragment>
+                                ) : (
+                                    <Fragment>
+                                        <input type="file" onChange={handleFileUpload} />
+                                        <button disabled={!auth.isAuthenticated} onClick={handleApply} className={auth.isAuthenticated ? "px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4" : "btn btn-disable"} >Apply</button>
+                                    </Fragment>
+                                )}
                             </div>
                         )}
                     </div>
