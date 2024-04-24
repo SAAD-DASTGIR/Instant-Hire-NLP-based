@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const JobSchema = Schema({
+   
     company: {
         type: Schema.Types.ObjectId,
         ref: 'company'
@@ -44,7 +45,13 @@ const JobSchema = Schema({
             type: Schema.Types.ObjectId,
             ref: 'users'
         },
+        score:{
+            type: Number
+        },
         name: {
+            type: String
+        },
+        email:{
             type: String
         },
         avatar: {
@@ -62,9 +69,6 @@ const JobSchema = Schema({
         date:{
             type: Date,
             default: Date.now
-        },
-        score:{
-            type : String,
         },
         approvedStatus:{
             type: String,
@@ -104,4 +108,4 @@ const JobSchema = Schema({
     }
 })
 
-module.exports = Job = mongoose.model('job', JobSchema)
+module.exports = Job = mongoose.model('Job', JobSchema)

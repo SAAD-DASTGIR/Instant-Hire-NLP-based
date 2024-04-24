@@ -21,6 +21,13 @@ const JobCompany = ({ getJobById, deleteJob, job: { job, loading }, auth, score 
 
   console.log("i am score", score);
   const navigate = useNavigate();
+//   const fetchApplicantScores = async () => {
+   
+//   };
+//  console.log (fetchApplicantScores())
+function trimNumber(number, decimalPlaces) {
+  return parseFloat(number.toFixed(decimalPlaces));
+}
 
   return (
     <div className="container">
@@ -67,7 +74,7 @@ const JobCompany = ({ getJobById, deleteJob, job: { job, loading }, auth, score 
               </p>
               <p className="mt">
                 {" "}
-                <strong>Description: </strong> {job.description}
+                <strong className=" flex justify-start">Description: </strong> {job.description}
               </p>
               <p className="mt">
                 {" "}
@@ -101,6 +108,7 @@ const JobCompany = ({ getJobById, deleteJob, job: { job, loading }, auth, score 
                     <th>Picture</th>
                     <th>Name</th>
                     <th>Qualification</th>
+                    <th>Contact</th>
                     <th>Status</th>
                     <th>Profile</th>
                     <th>Update Status</th>
@@ -131,6 +139,14 @@ const JobCompany = ({ getJobById, deleteJob, job: { job, loading }, auth, score 
                         </td>
                         <td className="hide-sm text-lg">
                           {" "}
+                          {applicant.email ? (
+                            <a className="bg-primary text-base font-semibold px-3 py-2 rounded"href={`mailto:${applicant.email}`}>Contact</a>
+                          ) : (
+                            <span className="content-center">-</span>
+                          )}{" "}
+                        </td>
+                        <td className="hide-sm text-lg">
+                          {" "}
                           {applicant.approvedStatus ? (
                             applicant.approvedStatus
                           ) : (
@@ -139,8 +155,8 @@ const JobCompany = ({ getJobById, deleteJob, job: { job, loading }, auth, score 
                         </td>
                         <td>
                           <Link
-                            className=" hover:opacity-80 "
                             to={`/profile/${applicant.user}`}
+                            className=" hover:opacity-80 "
                           >
                             <p className="bg-primary text-base font-semibold px-3 py-2 rounded  ">View Profile</p>
                           </Link>
@@ -176,11 +192,12 @@ const JobCompany = ({ getJobById, deleteJob, job: { job, loading }, auth, score 
                             })}
                           </select>
                         </td>
-                          <td>{score.applicantScore}</td>
+                          <td>{trimNumber(applicant.score,2)}</td>
 
                       </tr>
                     ))
                   ) : (
+                    
                     <tr>
                       <td colSpan="7">No user has applied for current job</td>
                     </tr>

@@ -23,6 +23,12 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
         )}
       </li>
       <li className=' py-3'>
+        <Link className=' text-customBlue hover:text-black px-2' to="/edit-profile" >
+        <i class="fa-solid fa-user-pen"></i>
+              <span className='text-xl  ml-3'>Edit Profile</span> 
+        </Link>
+      </li>
+      <li className=' py-3'>
         <Link className=' text-customBlue hover:text-black px-2' to="/edit-cv">
             <i className="fa fa-file-text-o" aria-hidden="true"></i>
             <span className='text-xl  ml-5'>Build CV</span> 
@@ -36,8 +42,8 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
       </li>
       <li className=' py-3'>
         <Link className=' text-customBlue hover:text-black px-2' to="/posts">
-            <i className="fa fa-clipboard" aria-hidden="true"></i>
-            <span className='text-xl  ml-4'>Commuinty</span> 
+        <i class="fa-regular fa-comment"></i>
+              <span className='text-xl  ml-4'>Commuinty</span> 
         </Link>
       </li>
       <li className=' py-3'>
@@ -52,12 +58,19 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
             <span className='text-xl  ml-3'>Interviews</span> 
         </Link>
       </li>
-      <li className=' py-3'>
+      {/* <li className=' py-3'>
         <Link className=' text-customBlue hover:text-black px-2' to="/parser">
         <i className="fa fa-clipboard" aria-hidden="true"></i>
               <span className='text-xl  ml-3'>Parser</span> 
         </Link>
+      </li> */}
+      <li className=' py-3'>
+        <Link className=' text-customBlue hover:text-black px-2' to="/" onClick={logout}>
+        <i className="fa-solid fa-right-from-bracket"aria-hidden="true"></i>
+              <span className='text-xl  ml-3'>Logout</span> 
+        </Link>
       </li>
+      
     </ul>
   )
   const companyAuthLinks = (
@@ -65,21 +78,27 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
       <li className=' py-3 '>
         <Link className='text-blue px-2' to="/dashboard">
         <i className="fa fa-id-card-o text-blue-300"  aria-hidden="true"></i>
-          <span className=' text-customBlue hover:text-black px-2' > Dashboard</span> 
+          <span className=' text-customBlue hover:text-black px-2' >  Dashboard</span> 
         </Link>
       </li>
       <li className=' py-3 '>
         {company && (
             <Link className=' text-customBlue hover:text-black px-2'to={`/company-profile/${company._id}`}>
                 <i className='fas fa-user ' />{' '} 
-                <span className=' text-customBlue hover:text-black px-2 text-xl  ml-3'> My Profile</span> 
+                <span className=' text-customBlue hover:text-black px-2 text-xl  ml-3'>My Profile</span> 
             </Link>
         )}
       </li>
       <li className=' py-3'>
+        <Link className=' text-customBlue hover:text-black px-2' to="/edit-company-profile" >
+        <i class="fa-solid fa-user-pen"></i>
+              <span className='text-xl  ml-3'>Edit Profile</span> 
+        </Link>
+      </li>
+      <li className=' py-3'>
         <Link className=' text-customBlue hover:text-black px-2' to="/post-job">
             <i className="fa fa-briefcase " aria-hidden="true"></i>  
-            <span className='  text-customBlue hover:text-black px-2text-xl  ml-3'>Post Job</span> 
+            <span className='  text-customBlue hover:text-black px-2text-xl  ml-3'>   Post Job</span> 
         </Link>
       </li>
       <li className=' py-3'>
@@ -88,13 +107,13 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
             <span className=' text-customBlue hover:text-black px-2 text-xl  ml-3'>Profiles</span> 
         </Link>
       </li>
+   
       <li className=' py-3'>
-        <Link className=' text-customBlue hover:text-black px-2' to="/resumes">
-            <i className="fa fa-file" aria-hidden="true"></i>  
-            <span className=' text-customBlue hover:text-black px-2 text-xl  ml-6'>Resumes</span> 
+        <Link className=' text-customBlue hover:text-black px-2' to="/" onClick={logout}>
+        <i className="fa-solid fa-right-from-bracket"aria-hidden="true"></i>
+              <span className='text-xl  ml-3'>  Logout</span> 
         </Link>
       </li>
-
       
     </ul>
   )
@@ -109,7 +128,12 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
 
   const adminLinks = (
     <ul>
-      <li>
+     
+      <li className=' py-3'>
+        <Link className=' text-customBlue hover:text-black px-2' to="/" onClick={logout}>
+        <i className="fa-solid fa-right-from-bracket"aria-hidden="true"></i>
+              <span className='text-xl  ml-3'>  Logout</span> 
+        </Link>
       </li>
     </ul>
   )

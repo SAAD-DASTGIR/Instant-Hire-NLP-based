@@ -45,17 +45,20 @@ const Job = ({
     }
 
     // Handler for applying to job with resume upload
-    const handleApply = async () => {
+    const handleApply =  () => {
         if (!resume) {
             alert("Please upload your resume.");
             return;
         }
         
         // Call applyForJob action to upload the resume and apply for the job
-        await applyForJob(id, resume);
+        fetchScoreForApplicant(resume);
+        setTimeout(function() {
+            applyForJob(id, resume);
+        }, 15000); // 15 seconds in milliseconds (15,000 milliseconds)
+                  
 
         // Fetch the score for the applicant after applying
-        fetchScoreForApplicant(resume);
     }
 
     // Function to fetch score for the applicant
@@ -65,6 +68,8 @@ const Job = ({
             const formData = new FormData();
             formData.append('resume', resume);
             formData.append('jobDescription', job.description); // Append job description to the FormData
+            formData.append('jobId', id); // Append job description to the FormData
+            formData.append('userId', auth.user._id); // Append job description to the FormData
         
             // Make the POST request to the scores API
             const response = await fetch("/scores", {
@@ -116,8 +121,9 @@ const Job = ({
                         <JobTop job={job} />
                         <JobBottom job={job} />
                         {!auth.isAdminAuthenticated && (
+                            
                             <div className=" bg-white px-24 pb-16">
-                                {/* Other buttons */}
+                                
                                 {applicantScore !== null && <p>Applicant's Score: {applicantScore}</p>}
                                 {applied ? (
                                     <Fragment>
@@ -130,7 +136,14 @@ const Job = ({
                                         <input type="file" onChange={handleFileUpload} />
                                         <button disabled={!auth.isAuthenticated} onClick={handleApply} className={auth.isAuthenticated ? "px-8 py-3 bg-primary text-lg text-gray-200 font-semibold hover:opacity-70 duration-300 uppercase mr-4" : "btn btn-disable"} >Apply</button>
                                     </Fragment>
-                                )}
+                                    
+                                )
+                                }
+                                 {favorite ? (
+                    <button disabled={!auth.isAuthenticated} onClick={() => {removeFromFavorites(id); setFavorite(!favorite)}} style={{color: 'red'}} className={auth.isAuthenticated ? "btn btn-light" : "btn btn-disable"}><i className="fa-solid fa-heart "></i> Remove from Favourites</button>
+                ) : (
+                    <button disabled={!auth.isAuthenticated} onClick={() => {addToFavorites(id); setFavorite(!favorite)}} className={auth.isAuthenticated ? "btn btn-light" : "btn btn-disable"}><i style={{color: 'red'}} className="fa-solid fa-heart "></i> Add to Favourites</button>
+                )}
                             </div>
                         )}
                     </div>

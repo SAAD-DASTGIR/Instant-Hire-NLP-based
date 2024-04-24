@@ -25,10 +25,12 @@ function Landing({isAuthenticated, isCompanyAuthenticated}) {
     <section className="landing ">
       <div className="dark-overlay">
         <div className="landing-inner">
-          <h1 className="x-large">INSTANT HIRE</h1>
+          <br></br>
+          <h1 className="x-large"><i class="fa-solid fa-house-laptop"></i>INSTANT HIRE</h1>
           <p className="lead">
-            Create User profile/portfolio, share posts, see jobs, and apply for jobs
+          Craft your identity, share your story, explore opportunities, and chase your career dreams.
           </p>
+          <br></br>
           <div className="buttons">
             <Link to="/register" className="btn btn-primary">Sign Up</Link>
             <Link to="/login" className="btn btn-light">Login</Link>

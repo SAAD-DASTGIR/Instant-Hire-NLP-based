@@ -33,7 +33,7 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
     <li><Link to="/">Home</Link></li>
     <li><Link to="/profiles">Explore</Link></li>
     <li><Link to="/admin-dashboard">Admin</Link></li>
-    <li><Link to="/parser">Parser</Link></li>
+    {/* <li><Link to="/parser">Parser</Link></li> */}
     <li><Link to="/register">Register</Link></li>
     <li><Link to="/login">Login</Link></li>
     <li>
@@ -59,7 +59,7 @@ function Navbar({ auth:{isAuthenticated,isCompanyAuthenticated, isAdminAuthentic
   return (
     <nav className="navbar bg-dark shadow-xl">
       <h1>
-        <Link className='flex items-center' to="/"><i className="fas fa-code"></i><p className='font-bold ml-1 text-2xl'>INSTANT HIRE</p></Link>
+        <Link className='flex items-center' to="/"><i class="fa-solid fa-house-laptop"></i><p className='font-bold ml-1 text-2xl'>INSTANT HIRE</p></Link>
       </h1>
       {!loading && (
       <Fragment>

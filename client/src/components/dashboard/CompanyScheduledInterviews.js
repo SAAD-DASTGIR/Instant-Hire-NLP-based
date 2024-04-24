@@ -23,7 +23,7 @@ const CompanyScheduledInterviews = ({interviews, setDetails, auth}) => {
                 {interviews.map((interview) => (
                     <div className='grid grid-cols-5 py-4 text-gray-600' key={interview._id}>
                         <div className='col-span-4'>
-                            <p>Interview Scheduled with <span className='font-semibold capitalize'>{interview.user.name}</span> on </p>
+                            <p>Interview Scheduled with <span className='font-semibold capitalize'>Applicant: {interview._id}</span> on </p>
                             <div className='grid grid-cols-2 mt-1'>
                                 <p> <span className='font-semibold'>Date: </span> <Moment format='DD/MM/YYYY'>{interview.date}</Moment></p>
                                 <p><span className='font-semibold'>Time: </span>{interview.time}</p>

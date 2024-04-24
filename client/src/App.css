@@ -319,7 +319,7 @@ img {
 
 /* Overlay */
 .dark-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color:rgba(236, 239, 241, 0.85);
   position: absolute;
   top: 0;
   left: 0;
@@ -447,7 +447,7 @@ button {
 }
 
 .landing-inner {
-  color: #fff;
+  color: #1289A7;
   height: 100%;
   width: 80%;
   margin: auto;

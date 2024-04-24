@@ -8,6 +8,7 @@ const User = require('../../models/User')
 const Job = require('../../models/Job')
 const Profile = require('../../models/Profile');
 const SpamJob = require('../../models/SpamJob');
+const Score = require('../../models/Score')
 
 
 // @route   POST api/jobs
@@ -208,42 +209,231 @@ router.delete('/admin/:id', adminAuth, async (req, res) => {
   // @desc    User can apply for a job
   // @access  private
   
+  // router.post('/apply/:id', auth, async (req, res) => {
+  //     try {
+  //       const job = await Job.findById(req.params.id)
+  //       const user = await User.findById(req.user.id)
+  //       const profile = await Profile.findOne({user: req.user.id})
+  
+  //       if (!job) {
+  //         return res.status(404).json({ msg: 'Job not found' })
+  //       }
+  
+  //       // Check if user has already applied for this job
+  //       if (job.applicants.find(applicant => applicant.user.toString() === req.user.id)) {
+  //         return res.status(400).json({errors: [{msg: 'You have already applied for this job'}]})
+  //       }
+    
+  //       const applicant = {
+  //         user: req.user.id,
+  //         name: user.name,
+  //         location: profile.location,
+  //         qualification: profile.qualification,
+  //         field: profile.field,
+  //         avatar: user.avatar,
+  //         score: user.score,
+  //         email: user.email, // Include the email
+
+  //       }
+    
+  //       job.applicants.unshift(applicant)
+    
+  //       await job.save()
+    
+  //       res.json(job.applicants)
+  //     } catch (err) {
+  //       console.error(err.message)
+  //       res.status(500).send('Server Error')
+  //     }
+  //   })
+
   router.post('/apply/:id', auth, async (req, res) => {
-      try {
-        const job = await Job.findById(req.params.id)
-        const user = await User.findById(req.user.id)
-        const profile = await Profile.findOne({user: req.user.id})
+    console.log("1")
+    // try {
+      // Find the job document including populated applicants with scores
+      const job = await Job.findById(req.params.id)
+        // .populate({
+        //   path: 'applicants',
+        //   populate: { path: 'score' } // Populate the score field within each applicant
+        // })
+        // .exec();
   
-        if (!job) {
-          return res.status(404).json({ msg: 'Job not found' })
-        }
+      // Find the user's score for this job
+    console.log("2")
+
+      const scoredata = await Score.findOne({ user: req.user.id, job: req.params.id });
+      console.log("777777",scoredata)
+      const user = await User.findById(req.user.id);
+      const profile = await Profile.findOne({ user: req.user.id });
+      const applicant = {
+        // user: Date.now(),
+        user: req.user.id,
+        name: user.name,
+        email:user.email,
+        location: profile.location,
+        qualification: profile.qualification,
+        field: profile.field,
+        avatar: user.avatar,
+        score: scoredata.score
+      };
   
-        // Check if user has already applied for this job
-        if (job.applicants.find(applicant => applicant.user.toString() === req.user.id)) {
-          return res.status(400).json({errors: [{msg: 'You have already applied for this job'}]})
-        }
+      // Add scoreValue to each applicant, if available
     
-        const applicant = {
-          user: req.user.id,
-          name: user.name,
-          location: profile.location,
-          qualification: profile.qualification,
-          field: profile.field,
-          avatar: user.avatar
-        }
-    
-        job.applicants.unshift(applicant)
-    
-        await job.save()
-    
-        res.json(job.applicants)
-      } catch (err) {
-        console.error(err.message)
-        res.status(500).send('Server Error')
+      
+  
+      // Check if the job exists
+      if (!job) {
+        return res.status(404).json({ msg: 'Job not found' });
       }
-    })
   
+      // Check if the user has already applied for this job
+      const isAlreadyApplied = job.applicants.some(applicant => applicant.user.toString() === req.user.id);
+      if (isAlreadyApplied) {
+        return res.status(400).json({ errors: [{ msg: 'You have already applied for this job' }] });
+      }
   
+      // Add the applicant to the applicants array
+      job.applicants.unshift(applicant);
+  
+      // Save the job document
+      await job.save();
+  
+      // Send the response with the updated applicants array
+      res.json(job.applicants);
+     } 
+    //  catch (err) {
+  //     console.error(err.message);
+  //     res.status(500).send('Server Error');
+  //   }
+  // }
+  );
+  
+
+
+
+
+
+
+//   router.post('/apply/:id', auth, async (req, res) => {
+//     try {
+//       // Fetch the job document including populated applicants with scores
+//       const job = await Job.findById(req.params.id)
+//         .populate({
+//           path: 'applicants',
+//           populate: { path: 'score' } // Populate the score field within each applicant
+//         })
+//         .exec();
+
+//           // Log the populated job object
+//         console.log(job);
+
+// // Send the response with applicants
+//         res.json(job.applicants);
+  
+//       const user = await User.findById(req.user.id);
+//       const profile = await Profile.findOne({ user: req.user.id });
+      
+//       if (!job) {
+//         return res.status(404).json({ msg: 'Job not found' });
+//       }
+  
+//       // Check if user has already applied for this job
+//       if (job.applicants.find(applicant => applicant.user.toString() === req.user.id)) {
+//         return res.status(400).json({ errors: [{ msg: 'You have already applied for this job' }] });
+//       }
+  
+//       // Find the user's score for this job
+//       const score = await Score.findOne({ user: req.user.id, job: req.params.id});
+  
+//       const applicant = {
+//         user: req.user.id,
+//         name: user.name,
+//         location: profile.location,
+//         qualification: profile.qualification,
+//         field: profile.field,
+//         avatar: user.avatar,
+//         score: score ? score.score : null, // Include the user's score if it exists, otherwise null
+//         // email: user.email, // Include the email
+//       };
+  
+//       job.applicants.unshift(applicant);
+  
+//       await job.save();
+  
+//       res.json(job.applicants);
+//     } catch (err) {
+//       console.error(err.message);
+//       res.status(500).send('Server Error');
+//     }
+//   });
+  
+
+  
+  // router.post('/apply/:id', auth, async (req, res) => {
+  //   try {
+  //     const job = await Job.findById(req.params.id);
+  //     const user = await User.findById(req.user.id);
+  //     const profile = await Profile.findOne({ user: req.user.id });
+  //     const score=await Score.findOne({user:req.user.id});
+  
+  //     if (!job) {
+  //       return res.status(404).json({ msg: 'Job not found' });
+  //     }
+  
+  //     // Check if user has already applied for this job
+  //     if (job.applicants.find(applicant => applicant.user.toString() === req.user.id)) {
+  //       return res.status(400).json({ errors: [{ msg: 'You have already applied for this job' }] });
+  //     }
+  //     if (!req.files || !req.files.resume) {
+  //       return res.status(400).send('No file uploaded');
+  //     }
+  
+  //     const { name, data } = req.files.resume;
+  //     const fileExt = name.slice(name.lastIndexOf('.') + 1); // Extract file extension
+  
+  //     if (fileExt.toLowerCase() !== 'pdf') { // Check file extension
+  //       return res.status(400).send('Only PDF files are allowed');
+  //     }
+  
+  //     console.log(`Received file: ${name}`);
+  
+  //     // Specify the folder name
+  //     const folderName = 'resumes';
+  
+  //     // Create the folder if it doesn't exist
+  //     const folderPath = path.join(__dirname, folderName);
+  //     if (!fs.existsSync(folderPath)) {
+  //       fs.mkdirSync(folderPath);
+  //     }
+  //     const filePath = path.join(folderPath, name);
+  //     fs.writeFileSync(filePath, data);
+  
+  //     // Save resume path or binary data to database
+  //     const resumePath = filePath; // Store the path to the uploaded resume
+  
+  //     const applicant = {
+  //       user: req.user.id,
+  //       name: user.name,
+  //       location: profile.location,
+  //       qualification: profile.qualification,
+  //       field: profile.field,
+  //       avatar: user.avatar,
+  //       resume: resumePath,
+  //       score:score.score // Store resume path in applicant object
+  //     }
+  
+  //     job.applicants.unshift(applicant);
+  
+  //     await job.save();
+  
+  //     res.json(job.applicants);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //     res.status(500).send('Server Error');
+  //   }
+  // });
+
+
   // @route   POST api/jobs/favorite/:id
   // @desc    User can add job to favorites
   // @access  private

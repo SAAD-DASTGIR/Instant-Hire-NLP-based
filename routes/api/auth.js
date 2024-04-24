@@ -28,7 +28,7 @@ router.get('/', auth, async (req,res)=>{
 router.post('/', [
 
     check('email','Please enter a valid email address').isEmail(),
-    check('password', "Enter a password with 6 or more characters").isLength({min: 6}), 
+    check('password', "Enter a password with 8 or more characters").isLength({min: 6}), 
     check('password', "Password is required").exists()
 
 ],

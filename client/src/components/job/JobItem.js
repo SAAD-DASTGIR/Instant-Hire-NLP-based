@@ -6,7 +6,7 @@ import Moment from 'react-moment'
 const JobItem = ({
     job:{
         _id,
-        company: { name},
+        // company: { name},
         title,
         location,
         description,
@@ -22,7 +22,7 @@ const JobItem = ({
             <p className='mr-3 bg-[#ccc] px-4 py-2 rounded-xl text-xl'><i className="fa fa-briefcase" aria-hidden="true"></i> {type}</p>
         </div>
         <div className="mt-2 mb-3 flex space-x-16 items-center">
-            <p className='text-xl items-center '><i className="fa fa-building " aria-hidden="true"></i> <span className="inline-block"> {name && name}</span></p>
+            <p className='text-xl items-center '><i className="fa fa-building " aria-hidden="true"></i> <span className="inline-block"> </span></p>
             <p className="text-xl"> {location && <span><i className="fa fa-map-marker " aria-hidden="true"></i> {location} </span>} </p>
             <p className='text-xl '> <i className="fa fa-clock-o" aria-hidden="true"></i> <span className='font-semibold '>Posted on:</span>  <Moment format='DD/MM/YYYY' >{date}</Moment></p> 
         </div>

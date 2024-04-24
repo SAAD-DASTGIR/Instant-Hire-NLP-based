@@ -7,7 +7,7 @@ import { createCompanyProfile, getCurrentCompanyProfile } from '../../actions/pr
 const EditCompanyProfile = ({profile:{profile, loading}, createCompanyProfile, getCurrentCompanyProfile}) => {
 
     const [formData, setFormData] = useState({
-        website:'',
+        // website:'',
         location:'',
         headcount:'',
         industry:'',
@@ -25,7 +25,7 @@ const EditCompanyProfile = ({profile:{profile, loading}, createCompanyProfile, g
         getCurrentCompanyProfile()
 
         setFormData({
-            website: loading || !profile.website ? '' : profile.website,
+            // website: loading || !profile.website ? '' : profile.website,
             location: loading || !profile.location ? '' : profile.location,
             headcount: loading || !profile.headcount ? '' : profile.headcount,
             industry: loading || !profile.industry ? '' : profile.industry,
@@ -39,7 +39,7 @@ const EditCompanyProfile = ({profile:{profile, loading}, createCompanyProfile, g
     }, [loading])
 
     const {
-        website, 
+        // website, 
         location,
         about,
         industry,
@@ -85,12 +85,12 @@ const EditCompanyProfile = ({profile:{profile, loading}, createCompanyProfile, g
                         Your company belongs to which industry (eg. Tech)
                     </small>
                 </div>
-                <div className="form-group">
+                {/* <div className="form-group">
                     <input type="text" placeholder="Website" name="website"  value={website} onChange={e => onChange(e)} />
                     <small className="form-text">
                         Enter company website
                     </small>
-                </div>
+                </div> */}
                 <div className="form-group">
                     <input type="text" placeholder="* Location" name="location" required value={location} onChange={e => onChange(e)}/>
                     <small className="form-text">
