@@ -28,6 +28,7 @@ app.use(cors({
     origin: '*'
 }));
 
+
 //Connect Database
 connectDB() 
 
@@ -37,8 +38,6 @@ app.use(express.json({extended: false}))
 app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-app.get('/', (req, res)=> res.send('API Running'))
 
 //Define routes
 app.use('/api/users', require('./routes/api/users'))
@@ -53,6 +52,13 @@ app.use('/api/admin', require('./routes/api/admin'))
 app.use('/api/spam', require('./routes/api/spam'))
 app.use('/api/interview', require('./routes/api/interview'))
 
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Define route to serve index.html for client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+app.get('/', (req, res)=> res.send('API Running'))
 app.get('/python', async (req, res) => {
   // Send a GET request to the Flask server
   axios.get('http://127.0.0.1:5001/')
@@ -67,219 +73,6 @@ app.get('/python', async (req, res) => {
 } )
 
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, 'uploads'); // Upload files to the 'uploads' directory
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, file.originalname); // Keep the original filename
-//   }
-// });
-
-// const uploads = multer({
-//   storage: storage,
-//   onError: function (err, next) {
-//     console.error("Multer error:", err);
-//     next(err);
-//   }
-// // }).single('resume');
-// app.post("/scores", async (req, res) => {
-//   try {
-//     const jobDescription = req.body.jobDescription;
-//     const user = req.body.user;
-//     const resumeFile = req.files.resume; // Assuming the file is sent as 'resume'
-
-//     // Check if the file was uploaded
-//     if (!resumeFile) {
-//       return res.status(400).json({ success: false, message: "No file uploaded" });
-//     }
-
-//     // Move the uploaded file to a designated directory
-//     const uploadPath = path.join(__dirname, 'uploads', resumeFile.name);
-
-//     // Execute Python script to get score
-//     const pythonProcess = spawn("python3", ["resume-score.py", uploadPath, jobDescription]);
-
-//     let score = "";
-
-//     pythonProcess.stdout.on("data", (data) => {
-//       score += data.toString();
-//       console.log(score); // Log the score here
-//     });
-
-//     pythonProcess.stderr.on("data", (data) => {
-//       console.error("Error executing Python script:", data.toString());
-//     });
-
-//     pythonProcess.on("close", async (code) => {
-//       if (code === 0) {
-//         const scoreValue = parseFloat(score); // Convert score to a number if necessary
-
-//         // Update score for the applicant in the database
-//         const updatedJob = await Job.findOneAndUpdate(
-//           { _id: req.params.id, "applicants.user": user },
-//           { $set: { "applicants.score": score } },
-//           { new: true }
-//         );
-
-//         if (!updatedJob) {
-//           return res.status(404).json({ msg: 'Job or applicant not found' });
-//         }
-
-//         // Send the score to the frontend
-//         res.json({ score: scoreValue });
-//       } else {
-//         console.error("Error getting score");
-//         res.status(500).send({ success: false, message: "Error getting score" });
-//       }
-//     });
-
-//     // Move the uploaded file to the designated directory
-//     await resumeFile.mv(uploadPath);
-
-//   }
-//   catch (error) {
-//     console.error("Error processing request:", error);
-//     res.status(500).send({ success: false, message: "Error processing request" });
-//   }
-// });
-
-
-// app.post("/scores", async (req, res) => {
-//   try {
-//     // Check if the file was uploaded
-//     if (!req.files || !req.files.resume) {
-//       return res.status(400).json({ success: false, message: "No file uploaded" });
-//     }
-
-//     const resumeFile = req.files.resume;
-//     const jobDescription = req.body.jobDescription;
-
-//     // Move the uploaded file to a designated directory
-//     const uploadPath = path.join(__dirname, 'uploads', resumeFile.name);
-//     await resumeFile.mv(uploadPath);
-
-//     // Execute Python script to get score
-//     const pythonProcess = spawn("python3", ["resume-score.py", uploadPath, jobDescription]);
-
-//     let score = "";
-
-//     pythonProcess.stdout.on("data", (data) => {
-//       score += data.toString();
-//     });
-
-//     pythonProcess.stderr.on("data", (data) => {
-//       console.error("Error executing Python script:", data.toString());
-//     });
-
-//     pythonProcess.on("close", async (code) => {
-//       if (code === 0) {
-//           console.log("Received file:", resumeFile.name);
-//           console.log("Job description:", jobDescription);
-//           console.log("Score:", score);
-  
-//           // Parse score to a number (if necessary)
-//           const scoreValue = parseFloat(score);
-  
-//           try {
-//               // Create a new Score document
-//               const newScore = new Score({
-//                   score: scoreValue, // Assuming score is a number
-//                    // Store job description if needed
-//                   // Add more fields as needed
-//               });
-  
-//               // Save the new score document to the database
-//               await newScore.save();
-  
-//               console.log(`Score saved to database successfully${score}`);
-//               res.json(score); // Send the score as response if needed
-//           } catch (error) {
-//               console.error("Error saving score to database:", error);
-//               res.status(500).send({ success: false, message: "Error saving score to database" });
-//           }
-//       } else {
-//           console.error("Error getting score");
-//           res.status(500).send({ success: false, message: "Error getting score" });
-//       }
-//   });
-  
-//   } catch (error) {
-//     console.error("Error processing request:", error);
-//     res.status(500).send({ success: false, message: "Error processing request" });
-//   }
-// });
-
-
-
-// app.post("/scores", async (req, res) => {
-//   try {
-//     // Check if the file was uploaded
-//     if (!req.files || !req.files.resume) {
-//       return res.status(400).json({ success: false, message: "No file uploaded" });
-//     }
-
-//     const resumeFile = req.files.resume;
-//     const jobDescription = req.body.jobDescription;
-
-//     // Move the uploaded file to a designated directory
-//     const uploadPath = path.join(__dirname, 'uploads', resumeFile.name);
-//     await resumeFile.mv(uploadPath);
-
-//     // Execute Python script to get score
-//     const pythonProcess = spawn("python3", ["resume-score.py", uploadPath, jobDescription]);
-
-//     let score = "";
-
-//     pythonProcess.stdout.on("data", (data) => {
-//       score += data.toString();
-//     });
-
-//     pythonProcess.stderr.on("data", (data) => {
-//       console.error("Error executing Python script:", data.toString());
-//     });
-
-//     pythonProcess.on("close", async (code) => {
-//       if (code === 0) {
-//         console.log("Received file:", resumeFile.name);
-//         console.log("Job description:", jobDescription);
-//         console.log("Score:", score);
-
-//         // Parse score to a number (if necessary)
-//         const scoreValue = parseFloat(score);
-
-//         try {
-//           // Update the job with the applicant's score
-//           const jobId = req.body.jobId;
-//           const applicantId = req.body.applicantId;
-
-//           const updatedJob = await Job.findOneAndUpdate(
-//             { _id: jobId, "applicants._id": applicantId },
-//             { $set: { "applicants.$.score": scoreValue } },
-//             { new: true }
-//           );
-
-//           if (!updatedJob) {
-//             return res.status(404).json({ success: false, message: 'Job or applicant not found' });
-//           }
-
-//           console.log(`Score saved to job document successfully: ${scoreValue}`);
-//           res.json({ success: true, score: scoreValue });
-//         } catch (error) {
-//           console.error("Error updating job with score:", error);
-//           res.status(500).json({ success: false, message: "Error updating job with score" });
-//         }
-//       } else {
-//         console.error("Error getting score");
-//         res.status(500).send({ success: false, message: "Error getting score" });
-//       }
-//     });
-
-//   } catch (error) {
-//     console.error("Error processing request:", error);
-//     res.status(500).send({ success: false, message: "Error processing request" });
-//   }
-// });
 
 
 app.post("/scores", async (req, res) => {
@@ -360,25 +153,6 @@ app.post("/scores", async (req, res) => {
 
 
 
-// app.get("/applicants/scores", async (req, res) => {
-//   try {
-//     // Retrieve all scores from the database
-//     const scores = await Score.find({}).populate('user', ['name', 'email']); // Populate the 'user' field if needed
-  
-//     // Extract scores from the retrieved data
-//     const scoresData = scores.map(score => ({
-//       score: score.score,
-//       // Add more fields as needed
-//     }));
-
-//     // Send the scores data as a response
-//     res.json(scoresData);
-   
-//   } catch (error) {
-//     console.error("Error retrieving scores:", error);
-//     res.status(500).send({ success: false, message: "Error retrieving scores" });
-//   }
-// });
 
 
 
@@ -765,28 +539,7 @@ app.post('/receive_text', async (req, res) => {
 });
 
 
-// app.get('/resume/search', async (req, res) => {
-//   const skill = req.query.skill; // Retrieve skill from query parameter
 
-//   if (!skill) {
-//     return res.status(400).json({ message: 'Please provide a skill parameter in the request.' });
-//   }
-
-//   try {
-//     const matchingResumes = await Resume.find({ skills: { $in: skill } });
-
-//     if (matchingResumes.length > 0) {
-//       return res.json(matchingResumes);
-//     } else {
-//       return res.json({ message: 'No resumes found matching the provided skill.' });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: 'Server error' });
-//   }
-// });
-
-// Route: GET /resume
 app.get('/resume', async (req, res) => {
   try {
     const allResumes = await Resume.find();

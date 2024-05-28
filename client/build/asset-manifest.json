@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/static/css/main.48df1766.css",
+    "main.js": "/static/js/main.d0c975c3.js",
+    "static/media/certificationsIcon.png": "/static/media/certificationsIcon.3648fde8457bd34fad80.png",
+    "static/media/skillsIcon.png": "/static/media/skillsIcon.aa1044e3d9d44da155fd.png",
+    "static/media/location.png": "/static/media/location.8a45cbfdc2e79262b291.png",
+    "static/media/experianceIcon.png": "/static/media/experianceIcon.974f408bdcf75266cd7b.png",
+    "static/media/telephone.png": "/static/media/telephone.d8049333507aabb8f60f.png",
+    "static/media/educationIcon.png": "/static/media/educationIcon.8b2de6c5d2d117f3a232.png",
+    "index.html": "/index.html",
+    "main.48df1766.css.map": "/static/css/main.48df1766.css.map",
+    "main.d0c975c3.js.map": "/static/js/main.d0c975c3.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.48df1766.css",
+    "static/js/main.d0c975c3.js"
+  ]
+}
